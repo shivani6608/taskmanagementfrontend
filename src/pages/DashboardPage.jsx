@@ -30,9 +30,16 @@ export const DashboardPage = () => {
 const createMutation = useMutation({
   mutationFn: (formData) => API.post('/tasks', formData),
 
-  onSuccess: () => {
-    invalidate();
+  onSuccess: async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['tasks'],
+    });
+
     setModalTask(undefined);
+  },
+
+  onError: (error) => {
+    console.error('Task creation failed:', error);
   },
 });
  const updateMutation = useMutation({
