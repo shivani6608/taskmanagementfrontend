@@ -27,21 +27,19 @@ export const DashboardPage = () => {
  queryFn: () => fetchTasks(filters),
  });
  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['tasks'] });
-const createMutation = useMutation({
-  mutationFn: (formData) => API.post('/tasks', formData),
-
-  onSuccess: async () => {
-    await queryClient.invalidateQueries({
-      queryKey: ['tasks'],
-    });
-
-    setModalTask(undefined);
-  },
-
-  onError: (error) => {
-    console.error('Task creation failed:', error);
-  },
-});
+ const createMutation = useMutation({
+   mutationFn: (formData) => API.post('/tasks', formData),
+   onSuccess: async () => {
+     await queryClient.refetchQueries({
+       queryKey: ['tasks', filters],
+       type: 'active',
+     });
+     setModalTask(undefined);
+   },
+   onError: (error) => {
+     console.error('Task creation failed:', error);
+   },
+ });
  const updateMutation = useMutation({
  mutationFn: ({ id, formData }) => API.put(`/tasks/${id}`, formData),
  onSuccess: () => {
